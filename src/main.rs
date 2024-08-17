@@ -1,0 +1,15 @@
+
+/*
+TODO: Create function to create a todo file in the user's documents folder
+    - Find the location of the user folder
+    - cd to Document folder
+    - Create a folder called 'Todos'
+TODO: Create function to write to Todo file
+TODO: Create function to read from Todo file
+TODO: Add the function to strikethrough completed Todo item
+TODO: Add the ability to create sub-lists
+ */
+
+fn main() {
+    println!("Hello, world!");
+}
