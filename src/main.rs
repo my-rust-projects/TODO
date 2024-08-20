@@ -13,7 +13,7 @@ TODO: Add the ability to create sub-lists
 TODO: Add a config.toml file
     - Make the program cross-compile.
  */
-
+use std::env;
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = env::args().collect();
 }
