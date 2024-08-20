@@ -1,5 +1,6 @@
 use std::fs;
 use std::error::Error;
+use std::env::consts::OS;
 
 pub struct Tool {
     name: String,
@@ -7,9 +8,15 @@ pub struct Tool {
     pub args: Vec<String>
 }
 
+pub struct Path {
+    os: String,
+    path: String
+}
+
 
 // run
 // ----------------
+// init - windows/linux/mac
 // new
 // open
 // save
@@ -37,6 +44,38 @@ impl Tool {
     }
 }
 
-pub fn run(tool: Tool) -> Result<(),()> {
 
+impl Path {
+    pub fn linux() -> Result<Path, ()> {
+        let dir = fs::create_dir("/opt/todo/");
+
+        Ok(Path {
+            os: String::from("linux"),
+            path: String::from("/opt/todo/")
+        })
+    }
 }
+
+
+
+// ************************** UNIT TESTS ***********************************
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_linux() {
+        let test = OS;
+        assert_eq!(test, "linux");
+    }
+}
+
+
+
+
+
+
+
+
+
