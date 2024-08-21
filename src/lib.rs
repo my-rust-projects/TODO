@@ -1,6 +1,6 @@
 use std::fs;
 use std::error::Error;
-use std::env::consts::OS;
+use std::env;
 
 pub struct Tool {
     name: String,
@@ -9,14 +9,13 @@ pub struct Tool {
 }
 
 pub struct Path {
-    os: String,
-    path: String
+    pub os: String,
+    pub path: String
 }
 
 
 // run
 // ----------------
-// init - windows/linux/mac
 // new
 // open
 // save
@@ -31,7 +30,7 @@ impl Tool {
         let mut tool_args: Vec<String> = Vec::new();
 
         if args.len() > 3 {
-            for item in args[3..] {
+            for item in args[3..].into_iter() {
                 tool_args.push(item.clone());
             }
         }
@@ -46,12 +45,25 @@ impl Tool {
 
 
 impl Path {
-    pub fn linux() -> Result<Path, ()> {
-        let dir = fs::create_dir("/opt/todo/");
+    pub fn linux() -> Result<Path, &'static str> {
+        let path = "/opt/todo";
+        let set_dir  = fs::create_dir(&path);
+        let working_dir = env::set_current_dir((&path));
 
         Ok(Path {
             os: String::from("linux"),
-            path: String::from("/opt/todo/")
+            path: String::from(path)
+        })
+    }
+
+    pub fn win() -> Result<Path, &'static str> {
+        let path = "C:\\Program Files\\todo";
+        let set_dir = fs::create_dir(&path);
+        let working_dir = env::set_current_dir(&path);
+
+        Ok(Path {
+            os: String::from("windows"),
+            path: String::from(path)
         })
     }
 }
@@ -66,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_linux() {
-        let test = OS;
+        let test = env::consts::OS;
         assert_eq!(test, "linux");
     }
 }
