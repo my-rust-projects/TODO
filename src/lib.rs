@@ -1,11 +1,8 @@
-use std::{fs, env, path};
-use std::io::Error;
+use std::fs;
 use crate::tool::Tool::Tool;
-use std::ffi::{OsStr, OsString};
 
 // run
 // ----------------
-// new
 // open
 // save
 // add
@@ -40,7 +37,19 @@ mod tests {
         };
         assert_eq!(new_todo(test_tool).unwrap(), ());
         let remove_file = fs::remove_file("test.txt");
+    }
+    fn test_read_todo() {
+        let mut test_file = fs::File::create_new(("test.txt"));
+        fs::write("test.txt", "This is a test").unwrap();
 
+        let test_tool = Tool {
+            name: String::from("todo"),
+            command: String::from("read"),
+            args: vec![String::from("test.txt")]
+        };
+
+        assert_eq!(read_todo(test_tool), "This is a test");
+        let remove_file = fs::remove_file("test.txt");
     }
 }
 
