@@ -13,7 +13,7 @@ pub mod Config {
         pub fn linux() -> Result<Config, &'static str> {
             let path = "/opt/todo";
             let set_dir  = fs::create_dir(&path);
-            let working_dir = env::set_current_dir((&path));
+            let working_dir = env::set_current_dir(&path);
 
 
             Ok(Config {

@@ -1,6 +1,6 @@
 pub mod Tool {
     pub struct Tool {
-        name: String,
+        pub name: String,
         pub command: String,
         pub args: Vec<String>
     }
