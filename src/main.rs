@@ -14,13 +14,13 @@ TODO: Add a config.toml file
     - Make the program cross-compile.
  */
 use std::env;
-use todo::Path;
+// use todo::Path;
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let os = env::consts::OS;
-
-    if os == "linux" {
-        let path = Path::linux().unwrap();
-        println!("{}",path.path )
-    }
+    // let os = env::consts::OS;
+    //
+    // if os == "linux" {
+    //     let path = Path::linux().unwrap();
+    //     println!("{}",path.path )
+    // }
 }
