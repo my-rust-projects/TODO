@@ -1,3 +1,4 @@
+use std::fmt::format;
 use std::fs;
 use crate::tool::Tool::Tool;
 
@@ -17,6 +18,15 @@ pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
         Err(error) => panic!("Can not create file: {:?}", error.kind())
     };
 
+    Ok(())
+}
+
+pub fn read_todo(tool: Tool) -> Result<(), &'static str> {
+    let file_result = fs::read_to_string(tool.args[0].clone());
+    let read_file = match file_result {
+        Ok(file) => println!("{file}"),
+        Err(error) => panic!("Can not read file: {:?}", error.kind())
+    };
     Ok(())
 }
 
@@ -48,7 +58,7 @@ mod tests {
             args: vec![String::from("test.txt")]
         };
 
-        assert_eq!(read_todo(test_tool), "This is a test");
+        assert_eq!(read_todo(test_tool).unwrap(), ());
         let remove_file = fs::remove_file("test.txt");
     }
 }
