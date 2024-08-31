@@ -1,4 +1,4 @@
-pub mod Tool {
+pub mod tool {
     pub struct Tool {
         pub name: String,
         pub command: String,

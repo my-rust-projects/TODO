@@ -1,6 +1,6 @@
 
 
-pub mod Config {
+pub mod config {
     use std::fs;
     use std::env;
 
@@ -12,8 +12,8 @@ pub mod Config {
     impl Config {
         pub fn linux() -> Result<Config, &'static str> {
             let path = "/opt/todo";
-            let set_dir  = fs::create_dir(&path);
-            let working_dir = env::set_current_dir(&path);
+            fs::create_dir(&path).expect("Directory Exists");
+            env::set_current_dir(&path).expect("Can not change Directory");
 
 
             Ok(Config {
@@ -24,8 +24,8 @@ pub mod Config {
 
         pub fn win() -> Result<Config, &'static str> {
             let path = "C:\\Program Files\\todo";
-            let set_dir = fs::create_dir(&path);
-            let working_dir = env::set_current_dir(&path);
+            fs::create_dir(&path).expect("Directory Exists");
+            env::set_current_dir(&path).expect("Can not change Directory");
 
             Ok(Config {
                 os: String::from("windows"),
