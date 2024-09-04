@@ -7,12 +7,12 @@ pub mod tool {
 
     impl Tool {
         pub fn build(args: &[String]) -> Result<Tool, &'static str> {
-            let name = args[1].clone();
-            let command = args[2].clone();
+            let name = args[2].clone();
+            let command = args[3].clone();
             let mut tool_args: Vec<String> = Vec::new();
 
             if args.len() > 3 {
-                for item in args[3..].into_iter() {
+                for item in args[4..].into_iter() {
                     tool_args.push(item.clone());
                 }
             }
