@@ -30,7 +30,7 @@ pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
 
 pub fn read_todo(tool: Tool) -> Result<(), &'static str> {
     let file = fs::OpenOptions::new().read(true).open("todo.txt");
-    match file_result {
+    match file {
         Ok(file) => println!("{file}"),
         Err(error) => panic!("Can not read file: {:?}", error.kind())
     };
@@ -38,15 +38,17 @@ pub fn read_todo(tool: Tool) -> Result<(), &'static str> {
 }
 
 pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
-    let mut task = String::from("");
-    for item in tool.args[1..].iter() {
-        task = task + " " + item;
-    }
-    task = task + " ";
+    let mut task = tool.args.join(" ");
+    task = task + "::";
+    let byte_task = task.as_bytes();
 
-    let mut file = fs::read_to_string(tool.args[0].clone()).unwrap();
-    file = file + "\n" + &task;
-    fs::write(tool.args[0].clone(), file.clone()).expect("Can not write to file");
+    let mut file = fs::OpenOptions::new()
+        .append(true)
+        .open("todo.txt")
+        .unwrap();
+
+    file.write(byte_task).expect("Can not write to file.");
+
     Ok(())
 }
 
