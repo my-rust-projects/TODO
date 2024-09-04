@@ -1,24 +1,35 @@
 use std::fs;
+use std::io::Write;
 use crate::tool::tool::Tool;
+// TODO: Make files into a flat database structure. Use split(), and collect()
+/*
+Command structure -> to-do(app) daily(todolist name) [new, read, add, remove](command)
+                        take out the trash(todoItem)
+                1 - 2 - 3 - 4
+*/
 
-// run
-// ----------------
-// remove
 pub mod tool;
 pub mod config;
 
 pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
-    let file_result = fs::File::create_new(tool.args[0].clone());
-    match file_result {
-        Ok(file) => file,
-        Err(error) => panic!("Can not create file: {:?}", error.kind())
+    // Gets the to do list name and adds :: to the end of it
+    // before converting the string to bytes.
+    let mut todo_list = tool.args.join(" ");
+    todo_list = todo_list + "::";
+    let byt_list = todo_list.as_bytes();
+
+    // Gets the file and opens it then adds the to do list name to file.
+    let file = fs::OpenOptions::new().append(true).open("todo.txt");
+    match file {
+        Ok(mut file) => file.write(byt_list).unwrap(),
+        Err(error) => panic!("Can not create todo: {:?}", error.kind())
     };
 
     Ok(())
 }
 
 pub fn read_todo(tool: Tool) -> Result<(), &'static str> {
-    let file_result = fs::read_to_string(tool.args[0].clone());
+    let file = fs::OpenOptions::new().read(true).open("todo.txt");
     match file_result {
         Ok(file) => println!("{file}"),
         Err(error) => panic!("Can not read file: {:?}", error.kind())
@@ -34,7 +45,7 @@ pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
     task = task + " ";
 
     let mut file = fs::read_to_string(tool.args[0].clone()).unwrap();
-    file = file + &task;
+    file = file + "\n" + &task;
     fs::write(tool.args[0].clone(), file.clone()).expect("Can not write to file");
     Ok(())
 }
@@ -45,6 +56,7 @@ pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
         task = task + " " + item;
     }
     let mut file = fs::read_to_string(tool.args[0].clone()).unwrap();
+
 
     Ok(())
 }
