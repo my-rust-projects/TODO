@@ -1,4 +1,5 @@
 use std::fs;
+use std::fs::OpenOptions;
 use std::io::Write;
 use crate::tool::tool::Tool;
 // TODO: Make files into a flat database structure. Use split(), and collect()
@@ -53,11 +54,15 @@ pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
 }
 
 pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
-    let mut task = String::from("");
-    for item in tool.args[1..].iter() {
-        task = task + " " + item;
-    }
-    let mut file = fs::read_to_string(tool.args[0].clone()).unwrap();
+    let mut task = tool.args.join(" ");
+    task = task + "::";
+    let mut file = fs::read_to_string("todo.txt").unwrap();
+    file = file.replace(task.as_str(), "");
+    let updated_file = OpenOptions::new().write(true).open("todo.txt");
+    match updated_file {
+        Ok(mut file) => file.write(task.as_bytes()).unwrap(),
+        Err(error) => panic!("Can't write to file: {:}", error.kind())
+    };
 
 
     Ok(())
