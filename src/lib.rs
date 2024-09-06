@@ -1,13 +1,6 @@
 use std::fs;
-use std::fs::OpenOptions;
 use std::io::Write;
 use crate::tool::tool::Tool;
-// TODO: Make files into a flat database structure. Use split(), and collect()
-/*
-Command structure -> to-do(app) daily(todolist name) [new, read, add, remove](command)
-                        take out the trash(todoItem)
-                1 - 2 - 3 - 4
-*/
 
 pub mod tool;
 pub mod config;
@@ -29,7 +22,7 @@ pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
     Ok(())
 }
 
-pub fn read_todo(tool: Tool) -> Result<fs::File, &'static str> {
+pub fn read_todo() -> Result<fs::File, &'static str> {
     let file = fs::OpenOptions::new().read(true).open("todo.txt");
     let return_file = match file {
         Ok(file) => file,
@@ -56,13 +49,10 @@ pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
 pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
     let mut task = tool.args.join(" ");
     task = task + "::";
-    let mut file = fs::read_to_string("todo.txt").unwrap();
-    file = file.replace(task.as_str(), "");
-    let updated_file = OpenOptions::new().write(true).open("todo.txt");
-    match updated_file {
-        Ok(mut file) => file.write(task.as_bytes()).unwrap(),
-        Err(error) => panic!("Can't write to file: {:}", error.kind())
-    };
+    let file = fs::read_to_string("todo.txt").unwrap();
+    let new_file = file.replace(task.as_str(), "");
+    let byte_file = new_file.as_bytes();
+    fs::write("todo.txt", byte_file).expect("Can't write to file.");
 
 
     Ok(())
@@ -74,11 +64,18 @@ pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
+    use std::env;
     use super::*;
 
     #[test]
     fn set_up() {
+        let curr_dir = env::current_dir().unwrap();
+        let dir = fs::read_dir(curr_dir).unwrap();
+        for file in dir {
+            if file.unwrap().file_name() == "todo.txt" {
+                fs::remove_file("todo.txt").unwrap();
+            }
+        }
         fs::File::create_new("todo.txt").unwrap();
     }
 
@@ -99,21 +96,28 @@ mod tests {
             command: String::from("add"),
             args: vec![String::from("test"), String::from("test")]
         };
-        let updated_file = add_todo(test_tool).unwrap();
+        add_todo(test_tool).unwrap();
     }
 
     #[test]
     fn test_3_read_todo() {
+        let info = fs::read_to_string("todo.txt").unwrap();
+        assert_eq!(info, "Daily::test test::");
+    }
+
+    #[test]
+    // #[ignore]
+    fn test_4_remove_todo() {
         let test_tool = Tool {
             name: String::from("Daily"),
-            command: String::from("read"),
-            args: vec![]
+            command: String::from("remove"),
+            args: vec![String::from("test"), String::from("test")]
         };
+        remove_todo(test_tool).unwrap();
         let info = fs::read_to_string("todo.txt").unwrap();
-
-        assert_eq!(info, "Daily::test test::");
         fs::remove_file("todo.txt").unwrap();
 
+        assert_eq!(info, "Daily::")
     }
 }
 
