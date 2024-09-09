@@ -1,11 +1,12 @@
-use std::fs;
+use std::{env, fs};
 use std::io::Write;
+use crate::config::config::Config;
 use crate::tool::tool::Tool;
 
 pub mod tool;
 pub mod config;
 
-pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
+fn new_todo(tool: Tool) -> Result<(), &'static str> {
     // Gets the to do list name and adds :: to the end of it
     // before converting the string to bytes.
     let mut todo_list = tool.name.clone();
@@ -22,7 +23,7 @@ pub fn new_todo(tool: Tool) -> Result<(), &'static str> {
     Ok(())
 }
 
-pub fn read_todo() -> Result<fs::File, &'static str> {
+fn read_todo() -> Result<fs::File, &'static str> {
     let file = fs::OpenOptions::new().read(true).open("todo.txt");
     let return_file = match file {
         Ok(file) => file,
@@ -31,7 +32,7 @@ pub fn read_todo() -> Result<fs::File, &'static str> {
     Ok(return_file)
 }
 
-pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
+fn add_todo(tool: Tool) -> Result<(), &'static str> {
     let mut task = tool.args.join(" ");
     task = task + "::";
     let byte_task = task.as_bytes();
@@ -46,7 +47,7 @@ pub fn add_todo(tool: Tool) -> Result<(), &'static str> {
     Ok(())
 }
 
-pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
+fn remove_todo(tool: Tool) -> Result<(), &'static str> {
     let mut task = tool.args.join(" ");
     task = task + "::";
     let file = fs::read_to_string("todo.txt").unwrap();
@@ -54,6 +55,36 @@ pub fn remove_todo(tool: Tool) -> Result<(), &'static str> {
     let byte_file = new_file.as_bytes();
     fs::write("todo.txt", byte_file).expect("Can't write to file.");
 
+
+    Ok(())
+}
+
+pub fn check_os() -> Result<Config, &'static str> {
+    let os  = env::consts::OS;
+    if os == "linux" {
+        let config = Config::linux().unwrap();
+        Ok(config)
+    } else if os == "windows" {
+        let config = Config::win().unwrap();
+        Ok(config)
+    } else {
+        panic!("Unsupported OS!");
+    }
+}
+
+pub fn run(tool: Tool) -> Result<(), &'static str> {
+    let command = tool.command.clone();
+    if command == "new" {
+        new_todo(tool).expect("Error");
+    } else if command == "read" {
+        read_todo().expect("Error");
+    } else if command == "add" {
+        add_todo(tool).expect("Error");
+    } else if command == "remove" {
+        remove_todo(tool).expect("Error");
+    } else {
+        panic!("Unknown command: {}", command);
+    }
 
     Ok(())
 }
@@ -78,6 +109,7 @@ mod tests {
         }
         fs::File::create_new("todo.txt").unwrap();
     }
+
 
     #[test]
     fn test_1_new_todo() {
