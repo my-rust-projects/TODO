@@ -23,13 +23,18 @@ fn new_todo(tool: Tool) -> Result<(), &'static str> {
     Ok(())
 }
 
-fn read_todo() -> Result<fs::File, &'static str> {
+fn read_todo() -> Result<(), &'static str> {
     let file = fs::OpenOptions::new().read(true).open("todo.txt");
-    let return_file = match file {
+    match file {
         Ok(file) => file,
         Err(error) => panic!("Can not read file: {:?}", error.kind())
     };
-    Ok(return_file)
+    let str_file = fs::read_to_string("todo.txt").unwrap();
+    let split_file = str_file.split("::");
+    for word in split_file {
+        println!("{:?}", word);
+    }
+    Ok(())
 }
 
 fn add_todo(tool: Tool) -> Result<(), &'static str> {

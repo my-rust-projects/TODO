@@ -12,10 +12,13 @@ pub mod config {
     impl Config {
         pub fn linux() -> Result<Config, &'static str> {
             let path = "/opt/todo";
-            fs::create_dir(&path).expect("Directory Exists");
-            env::set_current_dir(&path).expect("Can not change Directory");
-            fs::File::create_new("todo.txt").expect("File Exists");
-
+            if !fs::metadata(&path).is_ok() {
+                fs::create_dir(&path).expect("Directory Exists");
+                env::set_current_dir(&path).expect("Can not change Directory");
+                fs::File::create_new("todo.txt").expect("File Exists");
+            } else {
+                env::set_current_dir(&path).expect("Can not change Directory");
+            }
 
             Ok(Config {
                 os: String::from("linux"),
@@ -25,10 +28,11 @@ pub mod config {
 
         pub fn win() -> Result<Config, &'static str> {
             let path = "C:\\Program Files\\todo";
-            fs::create_dir(&path).expect("Directory Exists");
-            env::set_current_dir(&path).expect("Can not change Directory");
-            fs::File::create_new("todo.txt").expect("File Exists");
-
+            if !fs::metadata(&path).is_ok() {
+                fs::create_dir(&path).expect("Directory Exists");
+                env::set_current_dir(&path).expect("Can not change Directory");
+                fs::File::create_new("todo.txt").expect("File Exists");
+            }
             Ok(Config {
                 os: String::from("windows"),
                 path: String::from(path)
